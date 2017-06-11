@@ -1,0 +1,5 @@
+---
+applications:
+ - name: Music Deezer
+   host: musicdeezer-api
+   memory: 128M
