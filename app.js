@@ -8,7 +8,27 @@ var mydb;
 app.use(bodyParser.urlencoded({
     extended: false
 }))
-// parse application/jsonasdasd
+
+// Add headers
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+
 app.use(bodyParser.json())
 app.get('/whatsound/api/v1/deezer/track/values', function (req, res) {
     
@@ -105,6 +125,7 @@ app.get('/whatsound/api/v1/deezer/track/info/values', function (req, res) {
             if (!error && response.statusCode == 200) {
                 var infoDeezer = JSON.parse(body);
                 if (infoDeezer != ' ') {
+
                     if (infoDeezer.length == 0) {
                         var result = {
                             "code": 200,
@@ -113,22 +134,8 @@ app.get('/whatsound/api/v1/deezer/track/info/values', function (req, res) {
                         }
                         res.status(200).json(result);
                     } else {
-                                var resultDeezer = {
-                                    "name": JSON.stringify(infoDeezer['title_short']).replace(new RegExp('\\"', "g"), ""),
-                                    "track_id": (infoDeezer['id']),
-                                    "duration": infoDeezer['duration'],
-                                    "artist": JSON.stringify(infoDeezer['artist']['name']).replace(new RegExp('\\"', "g"), ""),
-                                    "artist_id": (infoDeezer['artist']['id']),
-                                    "artist_image": JSON.stringify(infoDeezer['artist']['picture_xl']).replace(new RegExp('\\"', "g"), ""),
-                                    "artist_tracklist": JSON.stringify(infoDeezer['artist']['tracklist']).replace(new RegExp('\\"', "g"), ""),
-                                    "album": JSON.stringify(infoDeezer['album']['title']).replace(new RegExp('\\"', "g"), ""),
-                                    "album_id": (infoDeezer['album']['id']),
-                                    "album_image": JSON.stringify(infoDeezer['album']['cover_xl']).replace(new RegExp('\\"', "g"), ""),
-                                    "album_tracklist": JSON.stringify(infoDeezer['album']['tracklist']).replace(new RegExp('\\"', "g"), ""),
-                                    "track_url": JSON.stringify(infoDeezer['link']).replace(new RegExp('\\"', "g"), "")
-                                }
                           
-                        res.status(200).json(resultDeezer);
+                        res.status(200).json(infoDeezer);
                     }
                 }else{
                     res.status(500).json({status: false, message : "Internal Server Error" , code : 500});
